@@ -46,15 +46,6 @@ def load_coco_data(file_path):
 ################################################################################
 
 
-def get_key_from_value(dictionary, value):
-    for key, val in dictionary.items():
-        if val == value:
-            return key
-    return None
-
-################################################################################
-
-
 def parse_args():
     """
     Parse command line arguments.
@@ -106,6 +97,7 @@ def main():
     for category in cocodata["categories"]:
         category_mapping[category["name"]] = category["id"]
 
+    print(category_mapping)
     # Load your CSV data
     df = pd.read_csv(args.csvpath)
 
@@ -128,7 +120,7 @@ def main():
     annotations = []
     total_rows = df.shape[0]
     for index, row in df.iterrows():
-        print(f"|__Processing row: {index+1}/{total_rows}")
+        print(f"|__Processing: {index+1}/{total_rows}")
         image_path = os.path.join(args.image, row["image_name"])
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -192,7 +184,8 @@ def main():
             )
             image_id_set.add(row["image_id"])
 
-        category_id = get_key_from_value(category_mapping, row["category"])
+        category_id = category_mapping.get(row["category"])
+        print(category_id)
 
         for mask in masks:
             rle = mask_to_coco_rle(mask.astype(np.uint8))
