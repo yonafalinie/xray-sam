@@ -116,5 +116,5 @@ if __name__ == "__main__":
                         help="Path to save the output CSV file.")
     args = parser.parse_args()
 
-    process_annotations(args.coco_annotation_path,
-                        args.images_dir, args.output_dir, args.csv_path)
+    process_annotations(args.cocogt,
+                        args.image, args.output, args.csvpath)
