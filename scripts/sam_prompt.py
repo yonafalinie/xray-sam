@@ -43,7 +43,14 @@ def load_coco_data(file_path):
     """
     with open(file_path) as f:
         return json.load(f)
+################################################################################
 
+
+def get_key_from_value(dictionary, value):
+    for key, val in dictionary.items():
+        if val == value:
+            return key
+    return None
 
 ################################################################################
 
@@ -56,10 +63,11 @@ def parse_args():
         args (argparse.Namespace): Parsed command line arguments.
     """
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="Inference"
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="sam prompt"
     )
     parser.add_argument("--image", type=str, help="image file/directory path")
-    parser.add_argument("--cocogt", type=str, help="Coco annotation gt file path")
+    parser.add_argument("--cocogt", type=str,
+                        help="Coco annotation gt file path")
     parser.add_argument("--csvpath", type=str, help="csv file path")
     parser.add_argument(
         "--weight",
@@ -70,11 +78,13 @@ def parse_args():
     parser.add_argument(
         "--prompt_centroid", action="store_true", help="sam prompt centroid"
     )
-    parser.add_argument("--prompt_bbox", action="store_true", help="sam prompt bbox")
+    parser.add_argument("--prompt_bbox", action="store_true",
+                        help="sam prompt bbox")
     parser.add_argument(
         "--prompt_rand", action="store_true", help="sam prompt random points"
     )
-    parser.add_argument("--output_json", type=str, help="Output json file path.")
+    parser.add_argument("--output_json", type=str,
+                        help="Output json file path.")
     args = parser.parse_args()
     return args
 
@@ -99,11 +109,12 @@ def main():
     # Load your CSV data
     df = pd.read_csv(args.csvpath)
 
-    #### Loading model
+    # Loading model
     if args.weight:
         model_type = "vit_h"
         device = (
-            torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+            torch.device("cuda") if torch.cuda.is_available(
+            ) else torch.device("cpu")
         )
         sam = sam_model_registry[model_type](checkpoint=args.weight)
         sam.to(device=device)
@@ -181,9 +192,7 @@ def main():
             )
             image_id_set.add(row["image_id"])
 
-        category_id = category_mapping.get(
-            row["category"].lower(), 1
-        )  # Default to 1 if category not found
+        category_id = get_key_from_value(category_mapping, row["category"])
 
         for mask in masks:
             rle = mask_to_coco_rle(mask.astype(np.uint8))
