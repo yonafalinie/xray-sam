@@ -32,21 +32,44 @@ def draw_annotation(image, annotation, category_id, cat_name):
     
     # Draw segmentation mask
     if 'segmentation' in annotation:
-        rle = annotation['segmentation']
-        if isinstance(rle, dict):  # RLE format
-            mask = mask_utils.decode(rle)
-        else:  # Polygon format
-            # Create an empty mask and draw the polygons
-            mask = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
-            for seg in rle:
-                poly = np.array(seg).reshape((-1, 1, 2))
-                cv2.fillPoly(mask, [poly], 1)
+        
+        if 'count' in annotation['segmentation']:
+            rle = annotation['segmentation']
+            if isinstance(rle, dict):  # RLE format
+                mask = mask_utils.decode(rle)
+            else:  # Polygon format
+                # Create an empty mask and draw the polygons
+                mask = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
+                for seg in rle:
+                    poly = np.array(seg).reshape((-1, 1, 2))
+                    cv2.fillPoly(mask, [poly], 1)
 
-        if mask is not None:
-            # Convert mask to three channels and same data type as image
-            mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
-            colored_mask = mask * np.array([0, 0, 255], dtype=image.dtype)
-            image = cv2.addWeighted(image, 1.0, colored_mask, 0.5, 0)
+            if mask is not None:
+                # Convert mask to three channels and same data type as image
+                mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+                colored_mask = mask * np.array([0, 0, 255], dtype=image.dtype)
+                image = cv2.addWeighted(image, 1.0, colored_mask, 0.5, 0)
+
+        else:
+            segmentation = annotation["segmentation"]
+            if len(segmentation) > 0:
+                # Create a white mask
+                mask = np.zeros_like(image, dtype=np.uint8)
+
+                # Draw the contour on the mask
+                cv2.drawContours(
+                    mask,
+                    [
+                        np.array(segmentation)
+                        .reshape((-1, 1, 2))
+                        .astype(np.int32)
+                    ],
+                    -1,
+                    (255, 255, 255),
+                    thickness=cv2.FILLED,
+                )
+                # Blend the mask with the original image using transparency
+                img = cv2.addWeighted(image, 1, mask, 0.5, 0)
 
     return image
 ################################################################################
