@@ -18,7 +18,7 @@ The code requires `python>=3.8`, as well as `pytorch>=1.7` and `torchvision>=0.8
 
 ## :plate_with_cutlery: Getting started
 
-1. Run the `sam_prompt` with different command line options:
+1. Run the `scripts/sam_prompt` with different command line options:
 
     ~~~
     sam_prompt.py [-h] [--image IMAGE] [--cocogt COCOGT] [--csvpath CSVPATH] [--weight WEIGHT] [--prompt_centroid]
@@ -39,7 +39,7 @@ The code requires `python>=3.8`, as well as `pytorch>=1.7` and `torchvision>=0.8
                             Output json file path. (default: None)
     ~~~
 
-2. Run the `evaluate` with different command line options:
+2. Run the `scripts/evaluate` with different command line options:
 
     ~~~
     evaluate.py [-h] --cocogt COCOGT --detjson DETJSON --iou_type {bbox,segm} [--statcsv STATCSV]
