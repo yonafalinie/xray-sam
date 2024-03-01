@@ -4,14 +4,17 @@
 
 The code requires `python>=3.8`, as well as `pytorch>=1.7` and `torchvision>=0.8`. Please follow the instructions [here](https://pytorch.org/get-started/locally/) to install both PyTorch and TorchVision dependencies. Installing both PyTorch and TorchVision with CUDA support is strongly recommended.
 
-Install Segment Anything:
+1. Install Segment Anything:
 
-clone the repository locally and install with
+    clone the repository locally and install with
 
-```
-git clone git@github.com:facebookresearch/segment-anything.git
-cd segment-anything; pip install -e .
-```
+    ~~~
+    pip3 install -e .
+    ~~~
+2. Install the requirements
+    ~~~
+    pip3 install -r requirements.txt
+    ~~~
 
 ## :plate_with_cutlery: Getting started
 
