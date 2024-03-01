@@ -97,7 +97,7 @@ def main():
     for category in cocodata["categories"]:
         category_mapping[category["name"]] = category["id"]
 
-    print(category_mapping)
+    # print(category_mapping)
     # Load your CSV data
     df = pd.read_csv(args.csvpath)
 
@@ -185,8 +185,7 @@ def main():
             image_id_set.add(row["image_id"])
 
         category_id = category_mapping.get(row["category"])
-        print(category_id)
-
+        
         for mask in masks:
             rle = mask_to_coco_rle(mask.astype(np.uint8))
             bbox = maskUtils.toBbox(rle).tolist()
