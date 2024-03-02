@@ -74,6 +74,9 @@ def parse_args():
     parser.add_argument(
         "--prompt_rand", action="store_true", help="sam prompt random points"
     )
+    parser.add_argument(
+        "--prompt_polyrand", action="store_true", help="sam prompt rand points within polygon" 
+    )
     parser.add_argument("--output_json", type=str,
                         help="Output json file path.")
     args = parser.parse_args()
@@ -142,6 +145,17 @@ def main():
                 [1, 1]
             )  # Assuming label 1 for all points for simplicity
 
+        if args.prompt_polyrand:
+            input_point = np.array(
+                [
+                    [row["pt1x_poly"], row["pt1y_poly"]],
+                    [row["pt2x_poly"], row["pt2y_poly"]],
+                ]
+            )
+            input_label = np.array(
+                [1, 1]
+            )  # Assuming label 1 for all points for simplicity
+
         if args.prompt_bbox:
             input_box = np.array(
                 [
@@ -155,7 +169,7 @@ def main():
         # Create a predictor
         predictor.set_image(image)
 
-        if args.prompt_centroid or args.prompt_rand:
+        if args.prompt_centroid or args.prompt_rand or args.prompt_polyrand:
 
             # Predict the mask for the current image
             masks, scores, logits = predictor.predict(

@@ -10,6 +10,7 @@ import os
 import pandas as pd
 import random
 from pycocotools.coco import COCO
+from shapely.geometry import Polygon, Point
 ################################################################################
 
 
@@ -33,13 +34,28 @@ def find_random_points_in_polygon(segmentation, n=3):
     return points
 ################################################################################
 
+# # Create polygon object
+# polygon = Polygon(polygon_points)
+def rand_point_within_poly(polygon, num_attempts=1000):
+    min_x, min_y, max_x, max_y = polygon.bounds
+    for _ in range(num_attempts):
+        random_point = Point(random.uniform(min_x, max_x), random.uniform(min_y, max_y))
+        if polygon.contains(random_point):
+            return random_point
+    return None
+
+################################################################################
 
 def process_annotations(coco_annotation_path, images_dir, output_dir, csv_path):
     coco = COCO(coco_annotation_path)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    # df_centroids = pd.DataFrame(columns=['image_id', 'annotation_id', 'image_name', 'centroid_x', 'centroid_y', 'category', 'bbox_x_top_left',
+    #                             'bbox_y_top_left', 'bbox_x_bottom_right', 'bbox_y_bottom_right', 'point_1_x', 'point_1_y', 'point_2_x', 'point_2_y', 'point_3_x', 'point_3_y'])
+
     df_centroids = pd.DataFrame(columns=['image_id', 'annotation_id', 'image_name', 'centroid_x', 'centroid_y', 'category', 'bbox_x_top_left',
-                                'bbox_y_top_left', 'bbox_x_bottom_right', 'bbox_y_bottom_right', 'point_1_x', 'point_1_y', 'point_2_x', 'point_2_y', 'point_3_x', 'point_3_y'])
+                                'bbox_y_top_left', 'bbox_x_bottom_right', 'bbox_y_bottom_right', 'point_1_x', 'point_1_y', 'point_2_x', 'point_2_y', 'point_3_x', 'point_3_y', 'pt1x_poly', 'pt1y_poly', 'pt2x_poly', 'pt2y_poly'])
+
     for ann_id in coco.getAnnIds():
         ann = coco.loadAnns(ann_id)[0]
         img_info = coco.loadImgs(ann['image_id'])[0]
@@ -64,6 +80,20 @@ def process_annotations(coco_annotation_path, images_dir, output_dir, csv_path):
                     # Draw each random point
                     cv2.circle(img, (int(point[0]), int(
                         point[1])), 5, (0, 0, 255), -1)
+                    
+                # Generate random points within the polygon
+                # Convert coordinates into pairs
+                polygon_points = [(segmentation[i], segmentation[i+1]) for i in range(0, len(segmentation), 2)]
+
+                # Create polygon object
+                polygon = Polygon(polygon_points)    
+
+                random_point1 = rand_point_within_poly(polygon)
+                random_point2 = rand_point_within_poly(polygon)
+
+                # Extract x and y coordinates
+                pt1x_poly, pt1y_poly = random_point1.x, random_point1.y
+                pt2x_poly, pt2y_poly = random_point2.x, random_point2.y
 
             output_path = os.path.join(output_dir, img_info['file_name'])
             # cv2.imwrite(output_path, img)
@@ -92,7 +122,9 @@ def process_annotations(coco_annotation_path, images_dir, output_dir, csv_path):
             'bbox_y_bottom_right': y_bottom_right,
             'point_1_x': random_points[0][0], 'point_1_y': random_points[0][1],
             'point_2_x': random_points[1][0], 'point_2_y': random_points[1][1],
-            'point_3_x': random_points[2][0], 'point_3_y': random_points[2][1]
+            'point_3_x': random_points[2][0], 'point_3_y': random_points[2][1],
+            'pt1x_poly': pt1x_poly, 'pt1y_poly': pt1y_poly,
+            'pt2x_poly': pt2x_poly, 'pt2y_poly': pt2y_poly
         }
         # Convert new_row dictionary to a DataFrame
         new_row_df = pd.DataFrame([new_row])
@@ -116,5 +148,8 @@ if __name__ == "__main__":
                         help="Path to save the output CSV file.")
     args = parser.parse_args()
 
+    d = os.path.dirname(args.csvpath)
+    os.makedirs(d, exist_ok=True)
+    
     process_annotations(args.cocogt,
                         args.image, args.output, args.csvpath)

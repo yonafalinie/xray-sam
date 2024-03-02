@@ -3,3 +3,6 @@ tabulate
 opencv-python
 matplotlib
 tqdm
+shapely
+pandas
+pycocotools
