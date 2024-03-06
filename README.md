@@ -50,6 +50,7 @@ The code requires `python>=3.8`, as well as `pytorch>=1.7` and `torchvision>=0.8
       --prompt_centroid     sam prompt centroid (default: False)
       --prompt_bbox         sam prompt bbox (default: False)
       --prompt_rand         sam prompt random points (default: False)
+      --prompt_polyrand     sam prompt rand points within polygon (default: False)
       --output_json OUTPUT_JSON
                             Output json file path. (default: None)
     ~~~

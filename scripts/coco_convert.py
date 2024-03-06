@@ -23,5 +23,5 @@ def convert_to_prediction_format(coco_json_path, output_json_path):
     with open(output_json_path, 'w') as f:
         json.dump(predictions, f)
 
-convert_to_prediction_format('/home2/projects/datasets/CLCXray/SAM/CLCXray_train_centroid.json', 
-                             '/home2/projects/datasets/CLCXray/SAM/CLCXray_train_centroid_pred.json')
+convert_to_prediction_format('/media/neel/hdd2tb/hdd2tb/data/projects/dataset/dbf6/SAM/dbf6_train__rand.json', 
+                             '/media/neel/hdd2tb/hdd2tb/data/projects/dataset/dbf6/SAM/dbf6_train__rand_pred.json')

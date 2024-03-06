@@ -209,7 +209,7 @@ class DetectionPerformanceEvaluation:
 ################################################################################  
 def build_params(coco_iou, areasize):
     
-    params = Params(iouType='bbox')
+    params = Params(iouType='segm')
 
     if coco_iou == 0.5 or coco_iou == 0.75:
         params.iouThrs = np.array([coco_iou]) 
