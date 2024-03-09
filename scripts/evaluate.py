@@ -10,6 +10,7 @@ from pycocotools.cocoeval import COCOeval
 import io
 from contextlib import redirect_stdout
 from tabulate import tabulate
+import numpy as np
 ################################################################################
 
 
@@ -37,7 +38,7 @@ def csv_write(out_csv_filename,
 ################################################################################
 
 
-def evaluate_classwise(gt_ann_file, dt_ann_file, iou_type):
+def evaluate_classwise(gt_ann_file, dt_ann_file, iou_type, iou_threshold):
     """
     Evaluates class-wise COCO metrics for ground truth and detection annotation files.
 
@@ -63,7 +64,11 @@ def evaluate_classwise(gt_ann_file, dt_ann_file, iou_type):
     # Evaluate each category
 
     # Initialize COCOeval object for bounding box evaluation
+        
     coco_eval = COCOeval(coco_gt, coco_dt, iouType=iou_type)
+    if iou_threshold is not None:
+        coco_eval.params.iouThrs = np.array([iou_threshold])
+    
     coco_eval.evaluate()
     coco_eval.accumulate()
     print(f'\n|____Overall')
@@ -127,6 +132,9 @@ if __name__ == "__main__":
                         type=str,
                         required=True,
                         help="Path to the detection COCO annotation file.")
+    parser.add_argument("--iou_threshold",
+                        type=float,
+                        help="IoU threshold for evaluation.")
     parser.add_argument("--iou_type",
                         type=str,
                         choices=['bbox', 'segm'],
@@ -139,7 +147,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     summary, summary_all = evaluate_classwise(
-        args.cocogt, args.detjson, args.iou_type)
+        args.cocogt, args.detjson, args.iou_type, args.iou_threshold)
 
     print('\n\n|====coco evaluation summary====|\n')
     print('\n|**summary: all**|\n')
