@@ -87,7 +87,7 @@ The code requires `python>=3.8`, as well as `pytorch>=1.7` and `torchvision>=0.8
 ## :frog: Reference
 If you use this repo and like it, use this to cite it:
 ```tex
-@misc{@inproceedings{gaus24segment,
+@inproceedings{gaus24segment,
  author = {Gaus, Y.F.A. and Bhowmik, N. and Isaac-Medina, B.K.S. and Breckon, T.P.},
  title = {Performance Evaluation of Segment Anything Model with Variational Prompting for Application to Non-Visible Spectrum Imagery},
  booktitle = {Proc. Computer Vision and Pattern Recognition Workshops},
